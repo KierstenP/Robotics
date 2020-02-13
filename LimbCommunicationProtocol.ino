@@ -81,7 +81,6 @@ void loop() {
   //publishTest();
   subscribeTest();
 
-
   //
 
   
@@ -108,7 +107,22 @@ void subscribeTest() {
   Adafruit_MQTT_Subscribe* subPtr;
   while ((subPtr = mqtt.readSubscription(MQTT_READ_TIMEOUT))){
     if (subPtr == &inTopic){
-      Serial.println((char*) inTopic.lastread);
+      Serial.println((char*) inTopic.lastread);  
     }
   }
 }
+
+
+char subscribe(){
+  Adafruit_MQTT_Subscribe* subPtr;
+  while ((subPtr = mqtt.readSubscription(MQTT_READ_TIMEOUT))){
+    if (subPtr == &inTopic){
+      return inTopic.lastread
+      
+    }
+  }
+}
+
+//code to break string up
+
+char 
