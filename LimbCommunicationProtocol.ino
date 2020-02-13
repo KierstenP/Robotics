@@ -20,7 +20,7 @@
  *     - 2nd and 3rd character will represent a number 0-99 (percentage of voltage output)
  *        - 0 - no power
  *        - 99 - max power
- * 7 = door
+ * 7 = door 
  *    - 0 = closed
  *    - 1 = open
  */
@@ -50,6 +50,12 @@ Adafruit_MQTT_Subscribe inTopic = Adafruit_MQTT_Subscribe(&mqtt, TOPIC_NAME_IN);
 void checkConnection();
 void publishTest();
 void subscribeTest();
+void officialSubscribe(); 
+
+void drum(char drumCommand);
+void arm(char armCommand[3]);
+void lin(char linCommand[3]);
+void door(char doorCommand[1]);
 
 void setup() {
   Serial.begin(115200);
@@ -79,10 +85,8 @@ void loop() {
   checkConnection();
 
   //publishTest();
-  subscribeTest();
-
-  //
-
+  //subscribeTest();
+  officialSubscribe();
   
 }
 
@@ -112,17 +116,71 @@ void subscribeTest() {
   }
 }
 
-
-char subscribe(){
+void officialSubscribe(){
   Adafruit_MQTT_Subscribe* subPtr;
   while ((subPtr = mqtt.readSubscription(MQTT_READ_TIMEOUT))){
     if (subPtr == &inTopic){
-      return inTopic.lastread
-      
+      String commandUpdate = Serial.readString((char*) inTopic.lastread); 
+      drum(commandUpdate[0]); //get drum command and send
+      arm(commandUpdate.substring(1, 3)); //get arm command and send
+      lin(commandUpdate.substring(4, 6)); //get lin command and send
+      door(commandUpdate[7]); //get door command and send
     }
   }
 }
 
-//code to break string up
+//function to handle drum code interpretation
+void drum(char drumCommand){
+  switch(drumCommand){
+    case '0':
+      //the drum is not moving
+      break;
+    case '1':
+      //rotate the drum forward at a slow/medium speed
+      break;
+    case '2':
+      //rotate the drum forward at a medium/high speed
+      break; 
+    case '3' 
+      //rotate the drum backwards at a slow/medium speed
+      break;
+    case '4' 
+      //rotate the drum backwards at a medium/high speed
+  }
+}
 
-char 
+//function to handle arm code interpretation
+void arm(char armCommand[3]){
+  //code to rotate front motors by angle armCommand
+  //code to rotate rear motors by angle armCommand
+}
+
+//function to handle linear actuator code interpretation
+void lin(char linCommand[3]){
+   switch(linCommand[0]){
+    case '0':
+      //drum is not moving 
+      break;
+    case '1':
+      //drum is moving down into the digging configuration at speed linCommand.substring(1, 2)
+      break;
+    case '2':
+      //drum is moving up into the starting configuration at speed linCommand.substring(1, 2)
+      break;
+   } 
+}
+
+//function to handle door code interpretation
+void door(char doorCommand){
+  switch(doorCommand){
+    case '0':
+      //door is not moving
+      break;
+    case '1':
+      //close the door
+      break;
+    case '2':
+      //open the door
+      break;
+  }  
+}
