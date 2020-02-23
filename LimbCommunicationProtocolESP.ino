@@ -1,7 +1,6 @@
 //this is how the esp will subscribe to the topic and then send the code to the teensy
 
 #include <ESP8266WiFi.h>
-#include <Servo.h>
 #include "Adafruit_MQTT.h"
 #include "Adafruit_MQTT_Client.h"
 
@@ -28,15 +27,13 @@ Adafruit_MQTT_Subscribe inTopic = Adafruit_MQTT_Subscribe(&mqtt, TOPIC_NAME_IN);
 void checkConnection();
 void publishTest();
 void subscribeTest();
-void officialSubscribe(); 
-
-
+void officialSubscribe(); //func to send commandUpdate to teensy
 
 void setup() {
   Serial.begin(115200);
   delay(10);
   
-  // Connect to WiFi network
+// Connect to WiFi network
 //  Serial.println();
 //  Serial.println();
 //  Serial.print("Connecting to ");
@@ -76,18 +73,18 @@ void checkConnection(){
   }
 }
 
-void publishTest() {
-  mqtt.publish("demoTopicOut", "hi");
-}
+//void publishTest() {
+//  mqtt.publish("demoTopicOut", "hi");
+//}
 
-void subscribeTest() {
-  Adafruit_MQTT_Subscribe* subPtr;
-  while ((subPtr = mqtt.readSubscription(MQTT_READ_TIMEOUT))){
-    if (subPtr == &inTopic){
-      Serial.println((char*) inTopic.lastread);  
-    }
-  }
-}
+//void subscribeTest() {
+//  Adafruit_MQTT_Subscribe* subPtr;
+//  while ((subPtr = mqtt.readSubscription(MQTT_READ_TIMEOUT))){
+//    if (subPtr == &inTopic){
+//      Serial.println((char*) inTopic.lastread);  
+//    }
+//  }
+//}
 
 void officialSubscribe(){
   Adafruit_MQTT_Subscribe* subPtr;
