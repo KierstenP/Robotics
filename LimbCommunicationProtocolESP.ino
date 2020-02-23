@@ -30,7 +30,6 @@ void publishTest();
 void subscribeTest();
 void officialSubscribe(); 
 
-//
 
 
 void setup() {
@@ -94,9 +93,8 @@ void officialSubscribe(){
   Adafruit_MQTT_Subscribe* subPtr;
   while ((subPtr = mqtt.readSubscription(MQTT_READ_TIMEOUT))){
     if (subPtr == &inTopic){
-      String commandUpdate = Serial.readString((char*) inTopic.lastread); 
-      Serial.write(commandUpdate); //maybe?
-      //print to the teensy so that it can break down the code into limb control commands
-      }
+      String commandUpdate = (char*) inTopic.lastread; 
+      Serial.write(commandUpdate); 
+      //write the command update to the teensy
     }
 }
