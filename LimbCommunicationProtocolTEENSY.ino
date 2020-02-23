@@ -1,7 +1,8 @@
 //teensy code
 /* NYU RDT
  * Limb Control code
- * 8 - bit string will be sent from the topic that we the esp is subscribed to
+ * 8 - bit string will be sent from the topic that the esp is subscribed to, and the
+ * esp will send to the teensy
  * 0 = drum commands
  *    - will be a number 0-4
  *    - 0 - not moving
@@ -39,20 +40,25 @@
   * lin - pin 6
   * door - pin 9
   */
+  
+//servo library to send PWM signals to motor controllers
+#include <Servo.h>
 
+
+//prototypes for limb actuation functions
 void drum(char drumCommand);
 void arm(char armCommand[3]);
 void lin(char linCommand[3]);
 void door(char doorCommand);
 
-//creating servo objects for each motor controller
+//creating servo objects for each corresponding motor controller
 Servo drumControl;
 Servo armControlOne; //front arms
 Servo armControlTwo; //rear arms
 Servo linControl;
 Servo doorControl;
 
-//teensy pins to motor controllers
+//teensy pins to corresponding motor controllers
 int drumPin = 3;
 int armPinOne = 4;
 int armPinTwo = 5;
@@ -63,32 +69,37 @@ int val; //used to map pulse values
 
 void setup() {
   // put your setup code here, to run once:
-  //Attach the motor controllers to corresponding pins on the teensy(pins 3-6)
-  drumControl.attach(drumPin);
+  //Attach the motor controller objects to corresponding pins on the teensy(pins 3-6)
+  drumControl.attach(drumPin); 
   armControlOne.attach(armPinOne);
   armControlTwo.attach(armPinTwo);
   linControl.attach(linPin);
   doorControl.attach(doorPin);
-  
-
+ 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  /*
+   * Read the commandUpdate from the ESP and then break down the 
+   * command into each respective limb control portion
+   * Example, the first character in the commandUpdate string will
+   * determine the actuation of the drum.
+   */
   String commandUpdate = Serial.readString; //maybe?
-  drum(commandUpdate[0]); //get drum command and send
-  arm(commandUpdate.substring(1, 3)); //get arm command and send
-  lin(commandUpdate.substring(4, 6)); //get lin command and send
-  door(commandUpdate[7]); //get door command and send
+  drum(commandUpdate[0]); //actuate the drum
+  arm(commandUpdate.substring(1, 3)); //actuate the arms
+  lin(commandUpdate.substring(4, 6)); //actuate the linear actuators
+  door(commandUpdate[7]); //actuate the door
 
 }
 
 
 void drum(char drumCommand){
-    //using the SPARK MAX motor controllers and NEO brushless motors
-    //datasheet for the NEO motors: http://www.revrobotics.com/content/docs/REV-21-1650-DS.pdf
-    //datasheet for the SPARK MAX motor controllers
-    //motor controllers can be controlled with PWM, CAN, and USB interfaces
+    /*
+     * using the SPARK MAX motor controllers and NEO brushless motors
+     * motor controllers can be controlled with a 1ms-2ms variable PWM signal
+     */
   switch(drumCommand){
     case '0':
       //the drum is not moving
@@ -117,6 +128,12 @@ void drum(char drumCommand){
   }
   
 void arm(char armCommand[3]){
+  /*
+   * currently receiving a value between 0-180 to actuate angle
+   * Might need to change in order to control individual actuation 
+   * of the arms
+   */
+  
   if(int(armCommand) == 0){
     //stop motion of arms
     armControlOne.writeMicroseconds(1500); 
@@ -132,12 +149,13 @@ void arm(char armCommand[3]){
       val = (int(armCommand)); 
       val = map(val, 0, 180, 1500, 2000); 
       armControlTwo.writeMicroseconds(val);
-      delay(15);
-    
+      delay(15);  
   }
+}
 
 
 void lin(char linCommand[3]){
+
    switch(linCommand[0]){
     case '0':
       //drum is not moving 
