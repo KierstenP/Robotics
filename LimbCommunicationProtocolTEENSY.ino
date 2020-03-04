@@ -11,9 +11,13 @@
         3 - rotating backwards slow/medium
         4 - rotating backwards medium/high
  * 1-3 = arms char
- *    - will represent a number 0 - 180
- *    - this is an angle corresponding to the front set of wheels
- *    - the "opposite" of this angle will be calculated for the rear set of wheels
+ *    - first char represents whether drum is moving from configuration to configuration
+ *       0 - not moving
+ *       1 - moving from start to drive
+ *       2 - moving from drive to start
+ *     - 2nd and 3rd character will represent a number 0-99 (percentage of voltage output)
+ *        - 0 - no power
+ *        - 99 - max power
  * 4-6 = linear actuator
  *     - 1st character will represent whether the drum is moving up or down
  *        - 0 = drum is not moving 
